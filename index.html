@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIGHTMARE GANG | Master RP FiveM</title>
+    <!-- Site Favicon / Profile Image Updated -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/ynTmGG1Q/Screenshot-2026-11-11-195938.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#030303',
+                        panelBg: 'rgba(10, 10, 12, 0.90)',
+                        accentWhite: '#ffffff',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(255, 255, 255, 0.35)',
+                        'glow-lg': '0 0 40px rgba(255, 255, 255, 0.5)',
+                        'card-glow': '0 8px 32px 0 rgba(0, 0, 0, 0.9)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #030303;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Snow Particle Canvas */
+        #snowCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Fixed Background Gothic Logo Watermark */
+        .bg-nightmare-logo {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 900px;
+            opacity: 0.10;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.25));
+        }
+
+        /* Cyber grid overlay */
+        .cyber-grid {
+            background-size: 35px 35px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Text Glow */
+        .glow-text {
+            text-shadow: 0 0 16px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030303;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        /* Audio Wave Visualizer Animation */
+        .wave-bar {
+            animation: wave 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes wave {
+            0% { height: 10%; }
+            100% { height: 100%; }
+        }
+
+        /* Tab Transition Animation */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="cyber-grid flex flex-col justify-between min-h-screen relative selection:bg-white selection:text-black">
+
+    <!-- SNOW CANVAS -->
+    <canvas id="snowCanvas"></canvas>
+
+    <!-- GOTHIC BACKGROUND WATERMARK LOGO -->
+    <div class="bg-nightmare-logo flex items-center justify-center">
+        <span style="font-family: 'Cinzel Decorative', serif;" class="text-7xl sm:text-9xl font-black tracking-widest text-white uppercase text-center select-none">NIGHTMARE</span>
+    </div>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- NAVIGATION HEADER -->
+        <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('homeTab')">
+                <div class="w-10 h-10 rounded-lg overflow-hidden bg-white flex items-center justify-center text-black font-black text-xl shadow-glow">
+                    <img src="https://i.ibb.co/ynTmGG1Q/Screenshot-2026-11-11-195938.png" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-widest text-white glow-text uppercase">NIGHTMARE</span>
+                    <span class="block text-[10px] text-gray-400 font-mono tracking-wider">MASTER RP • FIVEM MOROCCO</span>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation Tabs -->
+            <nav class="hidden xl:flex items-center space-x-1 bg-black/80 p-1.5 rounded-xl border border-white/10">
+                <button onclick="switchTab('homeTab')" id="nav-homeTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-black bg-white shadow-glow">
+                    Home
+                </button>
+                <button onclick="switchTab('rosterTab')" id="nav-rosterTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-gray-400 hover:text-white">
+                    Members
+                </button>
+                <button onclick="switchTab('radioTab')" id="nav-radioTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-gray-400 hover:text-white">
+                    Radio (18 MHz)
+                </button>
+                <button onclick="switchTab('infoTab')" id="nav-infoTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-gray-400 hover:text-white">
+                    Info RP & Gang
+                </button>
+                <button onclick="switchTab('problemsTab')" id="nav-problemsTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-gray-400 hover:text-white">
+                    Les Problèmes
+                </button>
+                <button onclick="switchTab('joinTab')" id="nav-joinTab" class="nav-btn px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-all text-gray-400 hover:text-white">
+                    Recruitment
+                </button>
+            </nav>
+
+            <!-- Right Action Button -->
+            <div class="flex items-center space-x-3">
+                <button onclick="openLeaderModal()" class="px-4 py-2 text-xs font-mono font-bold text-black bg-white hover:bg-gray-200 rounded-lg shadow-glow transition-all flex items-center space-x-2">
+                    <i class="fa-solid fa-lock"></i>
+                    <span class="hidden sm:inline">Leader Portal</span>
+                </button>
+                <button id="mobileMenuBtn" class="xl:hidden text-white text-xl focus:outline-none p-2">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden fixed inset-x-0 top-[73px] z-40 glass-panel border-b border-white/10 p-6 flex-col space-y-3 text-center xl:hidden">
+            <button onclick="switchTab('homeTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Home</button>
+            <button onclick="switchTab('rosterTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Members</button>
+            <button onclick="switchTab('radioTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Radio (18 MHz)</button>
+            <button onclick="switchTab('infoTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Info RP & Gang</button>
+            <button onclick="switchTab('problemsTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Les Problèmes</button>
+            <button onclick="switchTab('joinTab'); toggleMobileMenu();" class="py-2.5 text-sm font-bold uppercase text-white hover:text-gray-300">Recruitment</button>
+        </div>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full flex items-center justify-center">
+
+            <!-- TAB 1: HOME SECTION -->
+            <section id="homeTab" class="tab-content active w-full text-center py-6 space-y-8">
+                <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border border-white/20 bg-black/80 text-gray-300 text-xs font-mono uppercase shadow-glow">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active Faction • Master RP</span>
+                </div>
+
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div class="py-6 px-4 glass-panel rounded-3xl border border-white/30 shadow-card-glow inline-block w-full">
+                        <span style="font-family: 'Cinzel Decorative', serif;" class="text-4xl sm:text-6xl font-black tracking-widest text-white uppercase glow-text block">NIGHTMARE</span>
+                        <span class="text-xs font-mono text-gray-400 tracking-[0.3em] uppercase mt-2 block">MASTER RP GANG</span>
+                    </div>
+                </div>
+                
+                <p class="text-base sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                    Dominating the streets of Master RP with tactical discipline, total unity, and absolute authority.
+                </p>
+
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="switchTab('joinTab')" class="w-full sm:w-auto px-8 py-4 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-glow hover:bg-gray-200 transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Apply For Gang</span>
+                    </button>
+                    <a href="https://discord.gg/xfs2YSyVa" target="_blank" class="w-full sm:w-auto px-8 py-4 glass-panel text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-white/10 transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-brands fa-discord text-base"></i>
+                        <span>Official Discord</span>
+                    </a>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <div class="glass-panel p-6 rounded-2xl border border-white/20">
+                        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider">O.G</div>
+                        <div class="text-2xl font-black text-white glow-text mt-1">ZERO</div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border border-white/20">
+                        <div class="text-[10px] font-mono text-gray-400 uppercase tracking-wider">CO-O.G</div>
+                        <div class="text-2xl font-black text-white glow-text mt-1">HK</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: MEMBERS SECTION -->
+            <section id="rosterTab" class="tab-content w-full space-y-8">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white glow-text">MEMBERS</h2>
+                    <p class="text-gray-400 text-xs font-mono uppercase">NIGHTMARE OPERATIVES • MASTER RP</p>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xs font-mono text-gray-400 uppercase tracking-widest border-l-2 border-white pl-3">HIGH COMMAND</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl border border-white/20 shadow-card-glow relative">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="px-3 py-1 text-[10px] font-mono font-bold bg-white text-black rounded uppercase">O.G</span>
+                                <i class="fa-solid fa-crown text-amber-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-3xl font-black text-white tracking-wide">ZERO</h4>
+                            <p class="text-xs text-gray-400 font-mono mt-1">FOUNDER & O.G</p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border border-white/20 shadow-card-glow relative">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="px-3 py-1 text-[10px] font-mono font-bold bg-gray-200 text-black rounded uppercase">CO-O.G</span>
+                                <i class="fa-solid fa-shield-halved text-gray-300 text-xl"></i>
+                            </div>
+                            <h4 class="text-3xl font-black text-white tracking-wide">HK</h4>
+                            <p class="text-xs text-gray-400 font-mono mt-1">CO OG</p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border border-white/20 shadow-card-glow relative">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="px-3 py-1 text-[10px] font-mono font-bold bg-white text-black rounded uppercase">DEV & LEADER</span>
+                                <i class="fa-solid fa-code text-emerald-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-3xl font-black text-white tracking-wide">TONIC</h4>
+                            <p class="text-xs text-gray-400 font-mono mt-1">DEV & LEADER</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-xs font-mono text-gray-400 uppercase tracking-widest border-l-2 border-white pl-3">ACTIVE OPERATIVES</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="membersGrid"></div>
+                </div>
+            </section>
+
+            <!-- TAB 3: RADIO SECTION -->
+            <section id="radioTab" class="tab-content w-full max-w-xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white glow-text">Gang Radio</h2>
+                    <p class="text-gray-400 text-xs font-mono uppercase">ENCRYPTED FREQUENCY • MASTER RP</p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-3xl border border-white/20 shadow-card-glow space-y-6 text-center">
+                    <div class="bg-black/80 border border-white/20 p-6 rounded-2xl space-y-3">
+                        <div class="text-xs font-mono text-gray-400 uppercase">CURRENT FREQUENCY</div>
+                        <div class="text-5xl font-black text-white font-mono tracking-widest glow-text">
+                            18.000 <span class="text-xl text-gray-400">MHz</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 text-xs font-mono text-emerald-400">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>CHANNEL CONNECTED</span>
+                        </div>
+                    </div>
+
+                    <div class="h-16 flex items-center justify-center space-x-1.5 px-4 bg-black/40 rounded-xl border border-white/10">
+                        <div class="wave-bar w-2 bg-white rounded-full" style="animation-delay: 0.1s"></div>
+                        <div class="wave-bar w-2 bg-gray-400 rounded-full" style="animation-delay: 0.3s"></div>
+                        <div class="wave-bar w-2 bg-white rounded-full" style="animation-delay: 0.2s"></div>
+                        <div class="wave-bar w-2 bg-gray-500 rounded-full" style="animation-delay: 0.5s"></div>
+                        <div class="wave-bar w-2 bg-white rounded-full" style="animation-delay: 0.4s"></div>
+                        <div class="wave-bar w-2 bg-gray-300 rounded-full" style="animation-delay: 0.6s"></div>
+                        <div class="wave-bar w-2 bg-white rounded-full" style="animation-delay: 0.1s"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="playRadioBeep()" class="py-3 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-glow hover:bg-gray-200 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-walkie-talkie"></i>
+                            <span>Test Signal</span>
+                        </button>
+                        <a href="https://discord.gg/xfs2YSyVa" target="_blank" class="py-3 glass-panel text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-white/10 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-brands fa-discord"></i>
+                            <span>Voice Room</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: INFO RP & GANG (DREEBA, WEED FARM, LABOO & ALL SHOPS POSTALS) -->
+            <section id="infoTab" class="tab-content w-full max-w-5xl mx-auto space-y-10">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white glow-text">Info RP & Gang</h2>
+                    <p class="text-gray-400 text-xs font-mono uppercase">DREEBA, FARMS & ALL SHOPS POSTAL LOCATIONS</p>
+                </div>
+
+                <!-- SECTION 1: LOCATIONS (DREEBA, WEED FARM & LABOO) -->
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/20 shadow-card-glow space-y-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <h3 class="text-xl font-black text-white uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-map-location-dot text-emerald-400"></i>
+                            <span>Emplacements Stratégiques (Dreeba, Farm & Laboo)</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 font-mono mt-1">Cliquez sur n'importe quelle image pour l'agrandir et zoomer</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Location 1: DREEBA -->
+                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/15 flex flex-col justify-between">
+                            <div class="h-48 overflow-hidden bg-black/60 cursor-pointer relative group" onclick="openLightbox('https://i.ibb.co/Y4rwKrj0/Gemini-Generated-Image-45ijil45ijil45ij.jpg', 'Dreeba Location')">
+                                <img src="https://i.ibb.co/Y4rwKrj0/Gemini-Generated-Image-45ijil45ijil45ij.jpg" alt="Dreeba Location" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-mono font-bold space-x-1">
+                                    <i class="fa-solid fa-magnifying-glass-plus"></i> <span>Agrandir</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2 text-center bg-black/80">
+                                <span class="text-xs font-mono text-gray-400 uppercase tracking-widest block">EMPLACEMENT</span>
+                                <div class="px-4 py-2 bg-white text-black font-mono font-black text-sm rounded-xl shadow-glow">
+                                    DREEBA
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location 2: WEED FARM -->
+                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/15 flex flex-col justify-between">
+                            <div class="h-48 overflow-hidden bg-black/60 cursor-pointer relative group" onclick="openLightbox('https://i.ibb.co/nMHzgZyx/Gemini-Generated-Image-pnerdpnerdpnerdp-1.jpg', 'Weed Farm Location')">
+                                <img src="https://i.ibb.co/nMHzgZyx/Gemini-Generated-Image-pnerdpnerdpnerdp-1.jpg" alt="Weed Farm Location" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-mono font-bold space-x-1">
+                                    <i class="fa-solid fa-magnifying-glass-plus"></i> <span>Agrandir</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2 text-center bg-black/80">
+                                <span class="text-xs font-mono text-gray-400 uppercase tracking-widest block">WEED FARM</span>
+                                <div class="px-4 py-2 bg-white text-black font-mono font-black text-sm rounded-xl shadow-glow">
+                                    POSTAL: 2052
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location 3: LABOO -->
+                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/15 flex flex-col justify-between">
+                            <div class="h-48 overflow-hidden bg-black/60 cursor-pointer relative group" onclick="openLightbox('https://i.ibb.co/TqqJ2JQd/Screenshot-2026-11-11-193915.png', 'Laboo Location')">
+                                <img src="https://i.ibb.co/TqqJ2JQd/Screenshot-2026-11-11-193915.png" alt="Laboo Location" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-mono font-bold space-x-1">
+                                    <i class="fa-solid fa-magnifying-glass-plus"></i> <span>Agrandir</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2 text-center bg-black/80">
+                                <span class="text-xs font-mono text-gray-400 uppercase tracking-widest block">LABORATOIRE</span>
+                                <div class="px-4 py-2 bg-white text-black font-mono font-black text-sm rounded-xl shadow-glow">
+                                    LABOO
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: SHOPS ROBBERY MAP & EXACT 19 POSTALS -->
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/20 shadow-card-glow space-y-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <h3 class="text-xl font-black text-white uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-store text-emerald-400"></i>
+                            <span>Les Shops (Carte & 19 Codes Postaux Exacts)</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 font-mono mt-1">Tous les 19 postals des magasins braquables répertoriés</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <!-- Interactive Zoomable Map -->
+                        <div class="rounded-2xl overflow-hidden border border-white/20 bg-black/60 shadow-xl cursor-pointer relative group" onclick="openLightbox('https://i.pinimg.com/736x/8f/c9/5a/8fc95aab8ce3515939f24fa6fb9974d9.jpg', 'Shops Robbery Map')">
+                            <img src="https://i.pinimg.com/736x/8f/c9/5a/8fc95aab8ce3515939f24fa6fb9974d9.jpg" alt="Shops Map Master RP" class="w-full h-auto object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-mono font-bold space-x-2">
+                                <i class="fa-solid fa-magnifying-glass-plus text-xl"></i> <span>Cliquer pour zoomer la carte</span>
+                            </div>
+                        </div>
+
+                        <!-- 19 Shops Postals Grid -->
+                        <div class="space-y-3 font-mono text-xs">
+                            <div class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-2 flex items-center space-x-2">
+                                <i class="fa-solid fa-location-dot text-red-500"></i>
+                                <span>Liste des Postals (19 Locations):</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">9093</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">9075</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">8140</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">8092</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">7302</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">7354</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">6078</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">5016</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">5067</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">5046</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">5034</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">7030</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">4019</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">4025</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">3025</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">3008</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">3051</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">2006</span>
+                                <span class="p-2.5 bg-black/80 border border-white/15 rounded-lg text-center text-white font-bold hover:border-white transition">1000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 5: LES PROBLEMES SECTION -->
+            <section id="problemsTab" class="tab-content w-full max-w-2xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white glow-text">Les Problèmes</h2>
+                    <p class="text-gray-400 text-xs font-mono uppercase">INTERNAL MEMBER ISSUES & DISPUTES REPORT</p>
+                </div>
+
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/20 shadow-card-glow">
+                    <form id="problemForm" onsubmit="handleProblemSubmit(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-mono font-bold uppercase text-gray-300">Smiat Member (Your Name) <span class="text-white">*</span></label>
+                                <input type="text" id="probReporter" required placeholder="e.g. Tonic" class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm">
+                            </div>
+                            
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-mono font-bold uppercase text-gray-300">Target Member <span class="text-white">*</span></label>
+                                <input type="text" id="probTarget" required placeholder="e.g. Player Name" class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-mono font-bold uppercase text-gray-300">Type de Problème <span class="text-white">*</span></label>
+                            <select id="probType" required class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white focus:outline-none focus:border-white transition-all font-mono text-sm">
+                                <option value="Tir Sadiq / Friendly Fire">Tir Sadiq / Friendly Fire</option>
+                                <option value="Disobedience / Adab f Radio">Disobedience / Misbehavior f Radio</option>
+                                <option value="Rule Break f Master RP">Rule Break f Master RP</option>
+                                <option value="Stash / Weapons Issue">Stash / Weapons Issue</option>
+                                <option value="Autre Problem">Autre Problème</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-mono font-bold uppercase text-gray-300">Chno Twa9a3 (Details) <span class="text-white">*</span></label>
+                            <textarea id="probDetails" rows="4" required placeholder="Kteb l-problème f-tafasil..." class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm resize-none"></textarea>
+                        </div>
+
+                        <button type="submit" id="probSubmitBtn" class="w-full py-4 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-glow hover:bg-gray-200 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Send Report to High Command (Discord)</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 6: RECRUITMENT SECTION -->
+            <section id="joinTab" class="tab-content w-full max-w-2xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-wider text-white glow-text">Gang Recruitment</h2>
+                    <p class="text-gray-400 text-xs font-mono uppercase">JOIN NIGHTMARE • MASTER RP</p>
+                </div>
+
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/20 shadow-card-glow">
+                    <form id="recruitmentForm" onsubmit="handleRecruitmentSubmit(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-mono font-bold uppercase text-gray-300">Smiat Member / Name <span class="text-white">*</span></label>
+                                <input type="text" id="recName" required placeholder="Your In-Game Name" class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm">
+                            </div>
+                            
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-mono font-bold uppercase text-gray-300">Sin / Age <span class="text-white">*</span></label>
+                                <input type="number" id="recAge" required placeholder="Your Real Age" class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-mono font-bold uppercase text-gray-300">Khidma f RP / Experience <span class="text-white">*</span></label>
+                            <input type="text" id="recExp" required placeholder="e.g. 2 years FiveM RP, Gunner, Shooter" class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-mono font-bold uppercase text-gray-300">3lash Baghi Tdokhol L-Gang? <span class="text-white">*</span></label>
+                            <textarea id="recReason" rows="4" required placeholder="Explain why you want to join NIGHTMARE..." class="w-full px-4 py-3 bg-black/80 border border-white/15 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-white transition-all font-mono text-sm resize-none"></textarea>
+                        </div>
+
+                        <button type="submit" id="recSubmitBtn" class="w-full py-4 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-glow hover:bg-gray-200 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Application to High Command</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-white/10 glass-panel py-6 px-4 text-center mt-auto">
+            <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 text-xs text-gray-400 font-mono">
+                <div>
+                    © 2026 <span class="text-white font-bold">NIGHTMARE GANG</span> • Master RP
+                </div>
+                <div>
+                    Website created by <span class="text-white font-bold underline">TONIC</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- LEADER PORTAL MODAL (PASSCODE: 1998) -->
+    <div id="leaderModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-4xl w-full rounded-3xl p-6 sm:p-8 border border-white/20 relative shadow-2xl space-y-6 max-h-[90vh] flex flex-col">
+            
+            <button onclick="closeLeaderModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl p-2 z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Password Screen -->
+            <div id="authScreen" class="space-y-6 text-center py-10 my-auto">
+                <div class="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mx-auto text-2xl text-white shadow-glow">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-white uppercase tracking-wider">High Command Portal</h3>
+                    <p class="text-xs text-gray-400 font-mono mt-1">Enter clearance passcode to manage gang actions</p>
+                </div>
+                <div class="max-w-xs mx-auto space-y-4">
+                    <input type="password" id="leaderPasscode" placeholder="••••" class="w-full px-4 py-3 bg-black/90 border-2 border-white/40 rounded-xl text-center text-white tracking-widest placeholder-gray-500 focus:outline-none focus:border-white transition-all font-mono text-lg shadow-inner">
+                    <button onclick="verifyPasscode()" class="w-full py-3.5 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-glow hover:bg-gray-200 transition-all cursor-pointer">
+                        Unlock Portal
+                    </button>
+                    <p id="authError" class="text-xs text-red-400 hidden font-mono">Incorrect Passcode</p>
+                </div>
+            </div>
+
+            <!-- Unlocked Dashboard Content -->
+            <div id="dashboardContent" class="hidden flex-col flex-grow space-y-6 overflow-hidden">
+                <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                    <div>
+                        <h3 class="text-xl font-black text-white uppercase">Nightmare Management Table</h3>
+                        <p class="text-xs text-emerald-400 font-mono">HIGH COMMAND LOGS & DISCIPLINE PORTAL</p>
+                    </div>
+                    <span class="px-3 py-1 bg-white/10 border border-white/20 text-white rounded text-xs font-mono">O.G LEVEL</span>
+                </div>
+
+                <div class="overflow-y-auto flex-grow pr-2 space-y-3" id="leaderTableContainer"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- IMAGE LIGHTBOX / ZOOM MODAL -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 hidden" onclick="closeLightbox()">
+        <div class="relative max-w-5xl max-h-[90vh] w-full flex items-center justify-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-3xl p-2 hover:text-gray-300 z-10 focus:outline-none">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightboxImg" src="" alt="Zoomed Map" class="max-w-full max-h-[85vh] object-contain rounded-2xl border border-white/20 shadow-2xl">
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-panel border border-white/30 text-white px-6 py-4 rounded-xl shadow-glow hidden flex items-center space-x-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs font-mono">Notification</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const allMembersList = [
+            { name: "ZERO", rank: "O.G" },
+            { name: "HK", rank: "CO-O.G" },
+            { name: "Tonic", rank: "Dev" },
+            { name: "Burn X", rank: "member" },
+            { name: "Fadi", rank: "member" },
+            { name: "Carlos", rank: "member" },
+            { name: "Mookie", rank: "member" },
+            { name: "Gutti", rank: "member" },
+            { name: "Patix", rank: "member" },
+            { name: "Sanfoura", rank: "member" },
+            { name: "Luucy", rank: "member" },
+            { name: "OY", rank: "member" },
+            { name: "Squezee", rank: "member" },
+            { name: "Enzo", rank: "member" },
+            { name: "Zirox", rank: "member" },
+            { name: "Claud", rank: "member" }
+        ];
+
+        const webhookUrl = "https://discord.com/api/webhooks/1569866220407357440/3bvV-1Cf0t_bo6EzRh2qqVflwE0AKW-CEENDK7I3GknSni2XTjBYYnp91n8No9lfPsuF";
+
+        // Snow falling animation engine
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        let snowflakes = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Snowflake {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height;
+                this.size = Math.random() * 2.2 + 0.6;
+                this.speedY = Math.random() * 1.1 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 85; i++) snowflakes.push(new Snowflake());
+
+        function animateSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            snowflakes.forEach(s => {
+                s.update();
+                s.draw();
+            });
+            requestAnimationFrame(animateSnow);
+        }
+        animateSnow();
+
+        // Render Active Members Grid on Members Tab
+        function renderActiveMembers() {
+            const grid = document.getElementById('membersGrid');
+            if (!grid) return;
+
+            const activeOperatives = allMembersList.slice(3);
+
+            grid.innerHTML = activeOperatives.map(m => `
+                <div class="glass-panel p-4 rounded-xl border border-white/15 hover:border-white/40 transition-all text-center flex flex-col justify-between h-24">
+                    <h5 class="text-base font-bold text-white tracking-wide mt-1">${m.name}</h5>
+                    <span class="inline-block text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-1 bg-white/10 text-gray-300 rounded border border-white/10 self-center">
+                        ${m.rank}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Render Management Table in Leader Modal
+        function renderLeaderTable() {
+            const container = document.getElementById('leaderTableContainer');
+            container.innerHTML = allMembersList.map((m, index) => `
+                <div class="p-4 bg-black/70 border border-white/15 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-base font-bold text-white tracking-wide">${m.name}</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 bg-white/10 text-gray-300 rounded border border-white/10">${m.rank}</span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <select id="action-select-${index}" class="bg-black/90 text-xs font-mono text-white border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:border-white">
+                            <option value="Mort RP">☠️ Mort RP</option>
+                            <option value="Warning">⚠️ Warning</option>
+                            <option value="Leave Gang">🚪 Leave Gang</option>
+                        </select>
+
+                        <input type="text" id="action-reason-${index}" placeholder="Reason..." class="bg-black/90 text-xs font-mono text-white border border-white/20 rounded-lg px-3 py-2 placeholder-gray-600 focus:outline-none focus:border-white">
+
+                        <button onclick="submitMemberStatus('${m.name}', ${index})" class="px-4 py-2 bg-white text-black text-xs font-mono font-bold rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Send</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Send Status to Discord
+        async function submitMemberStatus(memberName, index) {
+            const action = document.getElementById(`action-select-${index}`).value;
+            const reason = document.getElementById(`action-reason-${index}`).value || "No reason specified";
+
+            let actionColor = 16711680;
+            if(action === 'Warning') actionColor = 16768256;
+
+            const embedPayload = {
+                username: "NIGHTMARE Command Log",
+                embeds: [
+                    {
+                        title: `⚡ HIGH COMMAND MEMBER ACTION ⚡`,
+                        color: actionColor,
+                        fields: [
+                            { name: "👤 Member", value: memberName, inline: true },
+                            { name: "🏷️ Action Status", value: action, inline: true },
+                            { name: "📝 Reason", value: reason }
+                        ],
+                        footer: { text: "NIGHTMARE Leader Portal • Master RP" },
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            };
+
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(embedPayload)
+                });
+                showToast(`Action for ${memberName} (${action}) sent to Discord!`);
+            } catch (err) {
+                showToast(`Status updated for ${memberName}`);
+            }
+        }
+
+        // Submit Problem Form
+        async function handleProblemSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('probSubmitBtn');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Sending Report...</span>`;
+
+            const reporter = document.getElementById('probReporter').value;
+            const target = document.getElementById('probTarget').value;
+            const type = document.getElementById('probType').value;
+            const details = document.getElementById('probDetails').value;
+
+            const payload = {
+                username: "NIGHTMARE Dispute Bot",
+                embeds: [{
+                    title: "⚠️ MEMBER PROBLEM REPORT ⚠️",
+                    color: 16737792,
+                    fields: [
+                        { name: "👤 Reported By", value: reporter, inline: true },
+                        { name: "🎯 Target Member", value: target, inline: true },
+                        { name: "📌 Issue Type", value: type, inline: true },
+                        { name: "📝 Details", value: details }
+                    ],
+                    footer: { text: "NIGHTMARE Internal Complaints System" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                showToast("Problème report sent to High Command!");
+                document.getElementById('problemForm').reset();
+            } catch (err) {
+                showToast("Report transmitted!");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+
+        // Submit Recruitment Form
+        async function handleRecruitmentSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('recSubmitBtn');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Sending Application...</span>`;
+
+            const name = document.getElementById('recName').value;
+            const age = document.getElementById('recAge').value;
+            const experience = document.getElementById('recExp').value;
+            const reason = document.getElementById('recReason').value;
+
+            const payload = {
+                username: "NIGHTMARE Recruitment Bot",
+                embeds: [{
+                    title: "📥 NEW GANG APPLICATION 📥",
+                    color: 16777215,
+                    fields: [
+                        { name: "👤 Smiat Member / Name", value: name, inline: true },
+                        { name: "🎂 Age", value: age, inline: true },
+                        { name: "🎮 RP Experience", value: experience },
+                        { name: "💡 Why NIGHTMARE?", value: reason }
+                    ],
+                    footer: { text: "NIGHTMARE Recruitment System • Master RP" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                showToast("Application submitted successfully!");
+                document.getElementById('recruitmentForm').reset();
+            } catch (err) {
+                showToast("Application sent!");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+
+        // Passcode Verification (Passcode: 1998)
+        function verifyPasscode() {
+            const input = document.getElementById('leaderPasscode').value;
+            const authError = document.getElementById('authError');
+            
+            if (input === '1998') {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                document.getElementById('dashboardContent').classList.add('flex');
+                authError.classList.add('hidden');
+                renderLeaderTable();
+                showToast("High Command Access Granted.");
+            } else {
+                authError.classList.remove('hidden');
+            }
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('text-black', 'bg-white', 'shadow-glow');
+                btn.classList.add('text-gray-400');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400');
+                activeBtn.classList.add('text-black', 'bg-white', 'shadow-glow');
+            }
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+
+        function openLeaderModal() {
+            document.getElementById('leaderModal').classList.remove('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
+            document.getElementById('leaderPasscode').value = '';
+            document.getElementById('authError').classList.add('hidden');
+        }
+
+        function closeLeaderModal() {
+            document.getElementById('leaderModal').classList.add('hidden');
+        }
+
+        // Lightbox Zoom Functions
+        function openLightbox(imgSrc, title) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImg');
+            img.src = imgSrc;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightboxModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Audio Beep Simulation for Radio
+        function playRadioBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+                showToast("18.000 MHz Radio Signal Tested!");
+            } catch (e) {
+                showToast("18.000 MHz Radio Active");
+            }
+        }
+
+        // Toast Notification Display
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3500);
+        }
+
+        window.onload = function() {
+            renderActiveMembers();
+        };
+    </script>
+</body>
+</html>
